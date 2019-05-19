@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="spot">
+	<resultMap type="map" id="spotMap">
+	</resultMap>
+	<select id="searchKeyword" parameterType="string" resultType="string">
+		select title from place where title like '%'||#{keyword}||'%'
+	</select>
+	<select id="selectSpotList" resultType="place">
+		SELECT * FROM PLACE WHERE USERID IS NULL
+	</select>
+	
+	<select id="selectPlaceList" resultType="place">
+		SELECT * FROM PLACE WHERE USERID IS NULL AND MAJORCATEGORY = '관광지'
+	</select>
+	<select id="selectPlaceCount" resultType="_int"> SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL AND MAJORCATEGORY = '관광지' </select>
+	<select id="selectAccommList" resultType="place">
+		SELECT * FROM PLACE WHERE USERID IS NULL AND MAJORCATEGORY = '숙소'
+	</select>
+	<select id="selectAccommCount" resultType="_int"> SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL AND MAJORCATEGORY = '숙소' </select>
+	<select id="selectFoodList" resultType="place">
+		SELECT * FROM PLACE WHERE USERID IS NULL AND MAJORCATEGORY = '음식점'
+	</select>
+	<select id="selectFoodCount" resultType="_int"> SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL AND MAJORCATEGORY = '음식점' </select>
+	
+	<select id="selectUserSpotList" resultType="place" parameterType="string">
+		SELECT * FROM PLACE WHERE USERID=#{userId}
+	</select>
+	<select id="selectSearchList" resultType="place" parameterType="string">
+		SELECT * FROM PLACE WHERE USERID IS NULL AND (TITLE LIKE '%'||#{keyword}||'%' OR ADDRESS LIKE '%'||#{keyword}||'%')
+	</select>
+	<select id="selectTotalCount" resultType="_int"> SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL </select>
+	<select id="selectTotalUserCount" resultType="_int" parameterType="string"> SELECT COUNT(*) FROM PLACE WHERE USERID=#{userId}</select>
+	<insert id="insertPlace" parameterType="place">
+		INSERT INTO PLACE(PLACENO, MAJORCATEGORY, MINORCATEGORY, AREA, USERID, TITLE, ADDRESS, PHONE, CONTENT, THUMBNAIL, MAINIMAGE)
+		VALUES(SEQ_PLACE.NEXTVAL, #{majorcategory}, #{minorcategory}, #{area}, null, #{title}, #{address}, #{phone}, #{content}, #{thumbnail}, #{mainimage})
+		<selectKey keyProperty="placeno" resultType="_int" order="AFTER">
+			SELECT SEQ_PLACE.CURRVAL FROM DUAL
+		</selectKey>
+	</insert>
+	
+	<insert id="insertMyPlace" parameterType="place">
+		insert into place(PLACENO,MAJORCATEGORY,USERID,TITLE,ADDRESS,CONTENT)
+		VALUES(SEQ_PLACE.NEXTVAL,'사용자등록',#{userid}, #{title}, #{address},#{content})
+	</insert>
+	
+	<update id="updatePlace" parameterType="place">
+		UPDATE PLACE
+		SET MAJORCATEGORY = #{majorcategory}, MINORCATEGORY = #{minorcategory}, AREA = #{area}, TITLE = #{title},
+			ADDRESS = #{address}, PHONE = #{phone}, CONTENT = #{content}, THUMBNAIL = #{thumbnail}, MAINIMAGE = #{mainimage}
+		WHERE PLACENO = #{placeno}
+	</update>
+	
+	<select id="selectSpot" parameterType="_int" resultType="place">
+		SELECT * FROM PLACE WHERE PLACENO = #{placeno}
+	</select>
+	
+	<update id="updateSpotCnt">
+	    UPDATE PLACE
+	    SET HITSCOUNT = HITSCOUNT + 1
+	    WHERE PLACENO = #{spotno}
+	</update>
+	
+	<delete id="deleteSpot" parameterType="_int">
+		DELETE FROM PLACE WHERE PLACENO = #{placeno}
+	</delete>
+	<select id="selectSearchCount" resultType="_int" parameterType="string"> 
+	SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL AND (TITLE LIKE '%'||#{keyword}||'%' OR ADDRESS LIKE '%'||#{keyword}||'%')
+	</select>
+	
+	<select id="spotSearchList" resultType="placespring" parameterType="string">
+		SELECT * FROM (
+			SELECT ROWNUM AS RNUM, B.* FROM (
+				SELECT *
+				FROM PLACE A
+				WHERE 1 = 1 
+				AND MINORCATEGORY = #{minorcategory}
+				ORDER BY NUM DESC
+			) B
+		) WHERE RNUM BETWEEN #{first} AND #{last}
+	</select>
+    <select id="spotSearchListTotal" resultType="_int" parameterType="string">
+		SELECT COUNT(*) AS CNT
+		FROM PLACE
+		WHERE 1 = 1
+        AND MINORCATEGORY = #{minorcategory}
+    </select>
+    <select id="selectLike" parameterType="placegood" resultType="placegood">
+    	SELECT * FROM PLACE_GOOD
+    	WHERE PLACENO=#{placeno} AND USERID=#{userid}
+    </select>
+    <insert id="insertLike" parameterType="placegood">
+		INSERT INTO PLACE_GOOD(PLACENO, USERID)
+		VALUES(#{placeno}, #{userid})
+	</insert>
+	<delete id="deleteLike" parameterType="placegood">
+		DELETE FROM PLACE_GOOD
+		WHERE PLACENO=#{placeno} AND USERID=#{userid}
+	</delete>
+	
+	<select id="selectBring" parameterType="placegood" resultType="placegood">
+    	SELECT * FROM PUT_PLACE
+    	WHERE PLACENO=#{placeno} AND USERID=#{userid}
+    </select>
+    <insert id="insertBring" parameterType="placegood">
+		INSERT INTO PUT_PLACE(PLACENO, USERID)
+		VALUES(#{placeno}, #{userid})
+	</insert>
+	<delete id="deleteBring" parameterType="placegood">
+		DELETE FROM PUT_PLACE
+		WHERE PLACENO=#{placeno} AND USERID=#{userid}
+	</delete>
+	
+	<update id="increaseLike">
+	    UPDATE PLACE
+	    SET GOODCOUNT = GOODCOUNT + 1
+	    WHERE PLACENO = #{placeno}
+	</update>
+	<update id="decreaseLike">
+	    UPDATE PLACE
+	    SET GOODCOUNT = GOODCOUNT - 1
+	    WHERE PLACENO = #{placeno}
+	</update>
+	<update id="increaseBring">
+	    UPDATE PLACE
+	    SET BRINGCOUNT = BRINGCOUNT + 1
+	    WHERE PLACENO = #{placeno}
+	</update>
+	<update id="decreaseBring">
+	    UPDATE PLACE
+	    SET BRINGCOUNT = BRINGCOUNT - 1
+	    WHERE PLACENO = #{placeno}
+	</update>
+	
+	<select id="selectPlaceLikecnt" parameterType="_int" resultType="_int">
+		SELECT GOODCOUNT
+		FROM PLACE WHERE PLACENO = #{placeno}
+	</select>
+	<select id="selectPlaceBringcnt" parameterType="_int" resultType="_int">
+		SELECT BRINGCOUNT
+		FROM PLACE WHERE PLACENO = #{placeno}
+	</select>
+	
+	<select id="searchCategoryList" resultType="place" parameterType="string">
+		SELECT * FROM PLACE WHERE USERID IS NULL AND MINORCATEGORY = #{minorcategory} 
+	</select>
+    <select id="categoryTotalCount" resultType="_int" parameterType="string">
+    	SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL AND MINORCATEGORY = #{minorcategory}
+    </select>
+    <select id="searchAreaList" resultType="place" parameterType="map">
+		SELECT * FROM PLACE WHERE USERID IS NULL AND AREA = #{area} AND MAJORCATEGORY = #{major}
+	</select>
+    <select id="areaTotalCount" resultType="_int" parameterType="map">
+    	SELECT COUNT(*) FROM PLACE WHERE USERID IS NULL AND AREA = #{area} AND MAJORCATEGORY = #{major}
+    </select>
+    
+    <!-- 댓글 -->
+	<insert id="placeReplyWrite" parameterType="com.kh.respect.place.model.vo.PlaceReply">
+        INSERT INTO PLACE_REPLY VALUES(SEQ_PLACE_REPLY.NEXTVAL, #{placeNo}, #{userId}, NULL, SYSDATE, #{content}, 0, #{placeReplyLevel}, 0)
+       	<selectKey keyProperty="replyNo" resultType="_int" order="AFTER">
+        	SELECT SEQ_PLACE_REPLY.CURRVAL FROM DUAL
+     	</selectKey>
+    </insert>
+     
+     <update id="placeReplyCountUpdate" parameterType="_int">
+        UPDATE PLACE SET REPLYCOUNT = REPLYCOUNT+1 WHERE PLACENO = #{placeNo}
+     </update>
+     
+     <insert id="insertPlaceReplyAttach" parameterType="com.kh.respect.place.model.vo.PlaceReplyAttachment">
+        INSERT INTO PLACE_ATTACHMENT VALUES(SEQ_PLACE_ATTACHMENT.NEXTVAL,#{replyNo},#{originName},#{reNamed})
+     </insert>
+     
+     <insert id="placeReplyWrite2" parameterType="com.kh.respect.place.model.vo.PlaceReply">
+        INSERT INTO PLACE_REPLY VALUES(SEQ_PLACE_REPLY.NEXTVAL,#{placeNo},#{replyRef},#{userId},SYSDATE,#{content},0,#{placeReplyLevel},0)
+     </insert>
+     
+     <update id="placeReplyReplyCountUpdate" parameterType="_int">
+        UPDATE PLACE_REPLY SET REPLYCOUNT = REPLYCOUNT+1 WHERE REPLYNO=#{replyRefNo}
+     </update>
+     
+     <delete id="placeReplyDelete" parameterType="_int">
+        DELETE FROM PLACE_REPLY WHERE REPLYNO=#{replyNo}
+     </delete>
+     
+     <update id="placeReplyGood" parameterType="_int">
+        UPDATE PLACE_REPLY SET GOODCOUNT = GOODCOUNT+1 WHERE REPLYNO=#{replyNo}
+     </update>
+     
+     <select id="placeReplyGoodCheck" parameterType="com.kh.respect.place.model.vo.PlaceReply" resultType="_int">
+        SELECT COUNT(*) FROM PLACE_REPLY_GOOD WHERE REPLYNO=#{replyNo} AND USERID=#{userId}
+     </select>
+     
+     <insert id="insertplaceReplyGood" parameterType="com.kh.respect.place.model.vo.PlaceReply">
+        INSERT INTO PLACE_REPLY_GOOD VALUES(#{replyNo},#{userId})
+     </insert>
+     
+     <select id="placeReplyList" parameterType="_int" resultType="map">
+        select A.*,P.PICTURE,P.NICKNAME from PLACE_REPLY A INNER JOIN RP_USER P ON(A.USERID = P.USERID) where PLACENO=#{placeNo} start with PLACEREPLYLEVEL=1 connect by prior REPLYNO=REPLYREF order siblings by WRITEDATE asc
+     </select>
+     
+     <select id="placeAttList" resultType="map">
+        select * from PLACE_ATTACHMENT
+     </select>
+	
+</mapper>

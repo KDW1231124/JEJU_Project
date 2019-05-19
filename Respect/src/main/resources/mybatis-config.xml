@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org/DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.kh.respect.place.model.vo.Place" alias="place"/>
+		<typeAlias type="com.kh.respect.place.model.vo.PlaceSpring" alias="placespring"/>
+		<typeAlias type="com.kh.respect.place.model.vo.PlaceGood" alias="placegood"/>
+		<typeAlias type="com.kh.respect.meet.model.vo.Meet" alias="meet"/>
+		<typeAlias type="com.kh.respect.user.model.vo.User" alias="user"/>
+		<typeAlias type="com.kh.respect.message.model.vo.Message" alias="message"/>
+		<typeAlias type="com.kh.respect.schedule.model.vo.Schedule" alias="schedule"/>
+		<typeAlias type="com.kh.respect.schedule.model.vo.TimeTable" alias="timetable"/>
+		<typeAlias type="com.kh.respect.notice.model.vo.Notice" alias="notice"/>
+		<typeAlias type="com.kh.respect.schedule.model.vo.ScheduleReport" alias="schedulereport"/>
+	</typeAliases>
+
+</configuration>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="main">
+
+	<resultMap type="map" id="mmpMap">
+	</resultMap>
+
+	<select id="selectMspList" resultType="place">
+		select * from place where majorcategory='관광지' order by goodcount desc
+	</select>
+	
+	<select id="selectMtpList" resultType="place">
+		select * from place where majorcategory='숙소' order by goodcount desc
+	</select>
+	
+	<select id="selectMmpList" resultMap="mmpMap">
+		select * from meet order by hitscount desc
+	</select>
+	
+	<select id="selectMnpList" resultType="map">
+		select * from notice order by writedate desc
+	</select>
+	
+	<select id="selectMcpList" resultType="map">
+		SELECT * FROM(SELECT S.*,P.THUMBNAIL, (select count(*) from schedule_reply b where b.scheduleno = s.scheduleNo) FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO)) order by goodcount desc
+	</select>
+
+</mapper>

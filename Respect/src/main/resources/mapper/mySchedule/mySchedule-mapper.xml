@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="mySchedule">
+
+	<resultMap type="map" id="myScheduleMap">
+	
+	</resultMap>
+
+	<select id="myScheduleNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM SCHEDULE WHERE USERID = #{userId}
+	</select>
+	
+	<select id="putScheduleNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM PUT_SCHEDULE WHERE USERID = #{userId}
+	</select>
+	
+	<select id="putPlaceNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM PUT_PLACE WHERE USERID = #{userId}
+	</select>
+	
+	<select id="myScheduleReportNum" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM SCHEDULE_REPORT WHERE USERID = #{userId}
+	</select>
+	
+	
+	<select id="myScheduleListRowTwo" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[ SELECT * FROM(SELECT S.*,P.THUMBNAIL FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) WHERE S.USERID=#{userId} ORDER BY ROWNUM DESC)WHERE ROWNUM<=2]]> 
+	</select>
+	
+	<select id="putScheduleListRowTwo" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[ SELECT * FROM(SELECT S.*,P.THUMBNAIL FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) INNER JOIN PUT_SCHEDULE PP ON(PP.SCHEDULENO=S.SCHEDULENO) WHERE PP.USERID=#{userId} ORDER BY ROWNUM DESC)WHERE ROWNUM<=2]]> 
+	</select>
+	
+	<select id="putPlaceListRowTwo" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[ SELECT * FROM(SELECT P.* FROM PUT_PLACE PP INNER JOIN PLACE P ON(PP.PLACENO=P.PLACENO) WHERE PP.USERID=#{userId} AND P.USERID IS NULL ORDER BY ROWNUM DESC)WHERE ROWNUM<=2]]> 
+	</select>
+	
+	<select id="myScheduleReportListRowTwo" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[ SELECT * FROM(SELECT S.*, P.THUMBNAIL, SP.TITLE AS SPTITLE FROM SCHEDULE_REPORT SP INNER JOIN SCHEDULE S ON(SP.SCHEDULENO = S.SCHEDULENO) INNER JOIN PLACE P ON(P.PLACENO=S.PLACENO) WHERE SP.USERID=#{userId} ORDER BY ROWNUM DESC)WHERE ROWNUM<=2]]> 
+	</select>
+	
+	<select id="myScheduleList" resultMap="myScheduleMap" parameterType="string">
+		SELECT * FROM(SELECT S.*,P.THUMBNAIL, TO_CHAR(SYSDATE, 'YYYYMMDD') AS TODAY FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) WHERE S.USERID=#{userId} ORDER BY ROWNUM DESC)
+	</select>
+	
+	<select id="myScheduleListBefore" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[SELECT * FROM(SELECT S.*,P.THUMBNAIL, TO_CHAR(SYSDATE, 'YYYYMMDD') AS TODAY FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) WHERE S.USERID=#{userId} ORDER BY ROWNUM DESC) WHERE STARTDATE < TODAY AND ENDDATE<TODAY]]>
+	</select>
+	
+	<select id="myScheduleListIng" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[SELECT * FROM(SELECT S.*,P.THUMBNAIL, TO_CHAR(SYSDATE, 'YYYYMMDD') AS TODAY FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) WHERE S.USERID=#{userId} ORDER BY ROWNUM DESC) WHERE STARTDATE <= TODAY AND TODAY<=ENDDATE]]>
+	</select>
+	
+	<select id="myScheduleListAfter" resultMap="myScheduleMap" parameterType="string">
+		<![CDATA[SELECT * FROM(SELECT S.*,P.THUMBNAIL, TO_CHAR(SYSDATE, 'YYYYMMDD') AS TODAY FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) WHERE S.USERID=#{userId} ORDER BY ROWNUM DESC) WHERE STARTDATE > TODAY AND ENDDATE>TODAY]]>
+	</select>
+	
+	<delete id="myScheduleDelete" parameterType="_int">
+		DELETE FROM SCHEDULE WHERE SCHEDULENO=#{scheduleNo}
+	</delete>
+	
+	<select id="putScheduleList" parameterType="string" resultMap="myScheduleMap">
+		SELECT * FROM(SELECT S.*,P.THUMBNAIL FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) INNER JOIN PUT_SCHEDULE PP ON(PP.SCHEDULENO=S.SCHEDULENO) WHERE PP.USERID=#{userId} ORDER BY ROWNUM DESC)
+	</select>
+	
+	<select id="putPlaceList" resultType="place" parameterType="string">
+		SELECT * FROM(SELECT P.* FROM PUT_PLACE PP INNER JOIN PLACE P ON(PP.PLACENO=P.PLACENO) WHERE PP.USERID=#{userId} AND P.USERID IS NULL ORDER BY ROWNUM DESC)
+	</select>
+	
+	<select id="putPlaceListTotalCount" parameterType="string" resultType="_int">
+		SELECT * FROM(SELECT COUNT(*) FROM PUT_PLACE PP INNER JOIN PLACE P ON(PP.PLACENO=P.PLACENO) WHERE PP.USERID=#{userId} AND P.USERID IS NULL ORDER BY ROWNUM DESC)
+	</select>
+	
+	
+	<select id="myScheduleReport" resultMap="myScheduleMap" parameterType="string">
+		SELECT * FROM(SELECT S.*, P.THUMBNAIL, SP.TITLE AS SPTITLE FROM SCHEDULE_REPORT SP INNER JOIN SCHEDULE S ON(SP.SCHEDULENO = S.SCHEDULENO) INNER JOIN PLACE P ON(P.PLACENO=S.PLACENO) WHERE SP.USERID=#{userId} ORDER BY ROWNUM DESC)
+	</select>
+	
+	
+	<delete id="myScheduleReportDelete" parameterType="_int">
+		DELETE FROM SCHEDULE_REPORT WHERE REPORTNO=#{reportNo}
+	</delete>
+	
+	<delete id="putPlaceDelete" parameterType="com.kh.respect.mySchedule.model.vo.Delete">
+		DELETE FROM PUT_PLACE WHERE USERID=#{userId} AND PLACENO=#{no}
+	</delete>
+	
+	<delete id="putScheduleDelete" parameterType="com.kh.respect.mySchedule.model.vo.Delete">
+		DELETE FROM PUT_SCHEDULE WHERE USERID=#{userId} AND SCHEDULENO=#{no}
+	</delete>
+	
+</mapper>

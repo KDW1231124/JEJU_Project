@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="schedule">
+
+
+	<resultMap type="map" id="ScheduleMap"></resultMap>
+	
+
+	<insert id="insertSchedule" parameterType="schedule">
+		insert into schedule values(seq_schedule.nextval,#{travelTheme},#{partyName},#{userId},#{title},#{startDate},#{endDate},#{peopleNum},#{publicFlag},default,default,default,default,default,sysdate,#{placeNo})
+		<selectKey keyProperty="scheduleNo" resultType="_int" order="AFTER">
+			select seq_schedule.currval from dual
+		</selectKey>
+	</insert>
+  	<insert id="insertTimeTable" parameterType="timetable">
+  		insert into timetable values(#{scheduleNo}, #{placeNo}, #{day}, #{time})
+  	</insert>
+  	
+  	<update id="updateReportFlag" parameterType="_int">
+  		UPDATE SCHEDULE SET REPORTFLAG = 1 WHERE SCHEDULENO=#{scheduleNo}
+  	</update>
+  	<update id="updateReportFlag2" parameterType="_int">
+  		UPDATE SCHEDULE SET REPORTFLAG = 0 WHERE SCHEDULENO=#{scheduleNo}
+  	</update>
+  	<delete id="deleteScheduleReport" parameterType="_int">
+  		delete from schedule_report where scheduleno=#{scheduleNo}
+  	</delete>
+	<insert id="insertScheduleReport" parameterType="schedulereport">
+		insert into SCHEDULE_REPORT values(seq_schedule_report.nextval,#{scheduleNo},#{userId},#{title},sysdate,#{content},#{reportDay})
+	</insert>
+
+
+  		<!-- 추천추천 -->
+  	
+  	<select id="goodCountCheck" parameterType="schedule" resultType="_int">
+  		SELECT COUNT(*) FROM SCHEDULE_GOOD WHERE SCHEDULENO=#{scheduleNo} AND USERID=#{userId}
+  	</select>
+  	
+  	<insert id="insertScheduleGoodCount" parameterType="schedule">
+  		INSERT INTO SCHEDULE_GOOD VALUES(#{scheduleNo},#{userId})
+  	</insert>
+  	
+  	<update id="goodCountUp" parameterType="schedule">
+  		UPDATE SCHEDULE SET GOODCOUNT = GOODCOUNT+1 WHERE SCHEDULENO=#{scheduleNo}
+  	</update>
+  	
+  	<delete id="deleteScheduleDownCount" parameterType="schedule">
+  		DELETE FROM SCHEDULE_GOOD WHERE SCHEDULENO=#{scheduleNo} AND USERID=#{userId}
+  	</delete>
+  	
+  	<update id="goodCountDown" parameterType="schedule">
+  		UPDATE SCHEDULE SET GOODCOUNT = GOODCOUNT-1 WHERE SCHEDULENO=#{scheduleNo}
+  	</update>
+  	
+  	<!-- 찜찜 -->
+  	
+  	<select id="bringCountCheck" parameterType="schedule" resultType="_int">
+  		SELECT COUNT(*) FROM PUT_SCHEDULE WHERE USERID=#{userId} AND SCHEDULENO=#{scheduleNo}
+  	</select>
+  	
+  	<insert id="insertSchedulebringCount" parameterType="schedule">
+  		INSERT INTO PUT_SCHEDULE VALUES(#{userId},#{scheduleNo},SYSDATE)
+  	</insert>
+  	
+  	<update id="bringCountUp" parameterType="schedule">
+  		UPDATE SCHEDULE SET BRINGCOUNT = BRINGCOUNT+1 WHERE SCHEDULENO=#{scheduleNo}
+  	</update>
+  	
+  	<delete id="deleteBringDownCount" parameterType="schedule">
+  		DELETE FROM PUT_SCHEDULE WHERE USERID=#{userId} AND SCHEDULENO=#{scheduleNo}
+  	</delete>
+  	
+  	<update id="bringCountDown" parameterType="schedule">
+  		UPDATE SCHEDULE SET BRINGCOUNT = BRINGCOUNT-1 WHERE SCHEDULENO=#{scheduleNo}
+  	</update>
+
+  	<select id="selectOneScheduleView" resultType="map" parameterType="_int">
+  		select S.*,R.nickname as nickname,to_char(startdate,'yyyy-mm-dd') as startdate1,to_char(enddate,'yyyy-mm-dd') as enddate1 from schedule S join rp_user R on(R.userid=S.userid) where scheduleno = #{scheduleNo} 
+  	</select>
+  	
+  	<select id="selectOneTimetableView" resultType="map" parameterType="_int">
+  		select T.*,P.title,P.address from timetable T join place P on(P.placeNo=T.placeno) where scheduleNo = #{scheduleNo} 
+  	</select>
+  	
+  	<select id="selectScheduleList" resultType="map">
+		SELECT * FROM(SELECT S.*,P.THUMBNAIL, (select count(*) from schedule_reply b where b.scheduleno = s.scheduleNo)as REPLYNUM FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) ORDER BY ROWNUM DESC)
+  	</select>
+  	
+  	<select id="selectTotalCount" resultType="_int">
+		select count(*) from schedule
+	</select>
+	
+
+
+	<select id="selectScheduleFilter" parameterType="map" resultMap="ScheduleMap">
+		SELECT * FROM(SELECT S.*,P.THUMBNAIL FROM SCHEDULE S INNER JOIN PLACE P ON(S.PLACENO=P.PLACENO) ORDER BY ROWNUM DESC)
+		
+		<if test="partyName == null and tripType ==null">
+			<choose>
+				<when test="sort eq 'on'">
+					order by writedate desc
+				</when>
+				<when test="sort eq 'off'">
+					order by hitscount desc
+				</when>
+			</choose>
+		</if>
+		
+		
+		<if test="tripType == null and sort == null">
+				<choose>
+				<when test="partyName != null">
+					where partyname = #{partyName}
+				</when>
+			</choose>
+		</if>
+		
+		
+		<if test="partyName == null and sort == null">
+			<choose>
+				<when test="tripType eq 0">
+					where reportflag=0
+				</when>
+				<when test="tripType eq 1">
+					where reportflag=1
+				</when>
+			</choose>
+		</if>
+		
+		<if test="partyName!=null and sort!=null and tripType!=null">
+			<choose>
+			
+				<when test="sort eq 'on' and tripType eq 0">
+					where partyname = #{partyName} and reportflag=0 order by writedate desc
+				</when>
+				<when test="sort eq 'on' and tripType eq 1">
+					where partyname = #{partyName} and reportflag=1 order by writedate desc
+				</when>
+			
+				<when test="sort eq 'off' and tripType eq 0">
+					where partyname = #{partyName} and reportflag=0 order by hitscount desc
+				</when>
+				<when test="sort eq 'off' and tripType eq 1">
+					where partyname = #{partyName} and reportflag=1 order by hitscount desc
+				</when>
+			</choose>
+		</if>
+		<if test='sort!=null and tripType!=null and partyName==null'>
+			<choose>
+				<when test="sort eq 'on' and tripType eq 0">
+					where reportflag=0 order by writedate desc
+				</when>
+				<when test="sort eq 'on' and tripType eq 1">
+					where reportflag=1 order by writedate desc
+				</when>
+				
+				<when test="sort eq 'off' and tripType eq 0">
+					where reportflag=0 order by hitscount desc
+				</when>
+				<when test="sort eq 'off' and tripType eq 1">
+					where reportflag=1 order by hitscount desc
+				</when>
+			</choose>
+		</if>
+		
+		<if test="tripType!=null and partyName!=null and sort==null">
+			<choose>
+				<when test="tripType == 0">
+					where partyname = #{partyName} and reportflag=0
+				</when>
+				<when test="tripType == 1">
+					where partyname = #{partyName} and reportflag=1
+				</when>
+				
+			</choose>
+		</if>
+		<if test="sort!=null and partyName!=null and tripType==null">
+			<choose>
+				<when test="sort eq 'on'">
+					where partyname = #{partyName} order by writedate desc
+				</when>
+			</choose>
+			<choose>
+				<when test="sort eq 'off'">
+					where partyname = #{partyName} order by hitscount desc
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	
+	
+	
+	
+	<!-- 댓글 -->
+	<insert id="scheduleReplyWrite" parameterType="com.kh.respect.schedule.model.vo.ScheduleReply">
+        INSERT INTO SCHEDULE_REPLY VALUES(SEQ_SCHEDULE_REPLY.NEXTVAL,#{scheduleNo},NULL,#{userId},SYSDATE,#{content},0,#{scheduleReplyLevel},0)
+        <selectKey keyProperty="replyNo" resultType="_int" order="AFTER">
+         SELECT SEQ_SCHEDULE_REPLY.CURRVAL FROM DUAL
+      </selectKey>
+     </insert>
+     
+     <update id="scheduleReplyCountUpdate" parameterType="_int">
+        UPDATE SCHEDULE SET REPLYCOUNT = REPLYCOUNT+1 WHERE SCHEDULENO = #{scheduleNo}
+     </update>
+     
+     <insert id="insertScheduleReplyAttach" parameterType="com.kh.respect.schedule.model.vo.ScheduleReplyAttachment">
+        INSERT INTO SCHEDULE_REPLY_ATTACHMENT VALUES(SEQ_SCHEDULE_REPLY_ATTACHMENT.NEXTVAL,#{replyNo},#{originName},#{reNamed})
+     </insert>
+     
+     <insert id="scheduleReplyWrite2" parameterType="com.kh.respect.schedule.model.vo.ScheduleReply">
+        INSERT INTO SCHEDULE_REPLY VALUES(SEQ_SCHEDULE_REPLY.NEXTVAL,#{scheduleNo},#{replyRef},#{userId},SYSDATE,#{content},0,#{scheduleReplyLevel},0)
+     </insert>
+     
+     <update id="scheduleReplyReplyCountUpdate" parameterType="_int">
+        UPDATE SCHEDULE_REPLY SET REPLYCOUNT = REPLYCOUNT+1 WHERE REPLYNO=#{replyRefNo}
+     </update>
+     
+     
+     <delete id="scheduleReplyDelete" parameterType="_int">
+        DELETE FROM SCHEDULE_REPLY WHERE REPLYNO=#{replyNo}
+     </delete>
+     
+     <update id="scheduleReplyGood" parameterType="_int">
+        UPDATE SCHEDULE_REPLY SET GOODCOUNT = GOODCOUNT+1 WHERE REPLYNO=#{replyNo}
+     </update>
+     
+     <select id="scheduleReplyGoodCheck" parameterType="com.kh.respect.schedule.model.vo.ScheduleReply" resultType="_int">
+        SELECT COUNT(*) FROM SCHEDULE_REPLY_GOOD WHERE REPLYNO=#{replyNo} AND USERID=#{userId}
+     </select>
+     
+     <insert id="insertscheduleReplyGood" parameterType="com.kh.respect.schedule.model.vo.ScheduleReply">
+        INSERT INTO SCHEDULE_REPLY_GOOD VALUES(#{replyNo},#{userId})
+     </insert>
+     
+     <select id="scheduleReplyList" parameterType="_int" resultType="map">
+        select A.*,P.PICTURE,P.NICKNAME from SCHEDULE_REPLY A INNER JOIN RP_USER P ON(A.USERID = P.USERID) where SCHEDULENO=#{scheduleNo} start with SCHEDULEREPLYLEVEL=1 connect by prior REPLYNO=REPLYREF order siblings by WRITEDATE asc
+     </select>
+     
+     <select id="scheduleAttList" resultType="map">
+        select * from SCHEDULE_REPLY_ATTACHMENT
+     </select>
+
+	<select id="selectSchedule" parameterType="_int" resultType="map">
+		select S.*,R.nickname as nickname,to_char(startdate,'yyyy-mm-dd') as startdate1, to_char(enddate,'yyyy-mm-dd') as enddate1 from schedule S join rp_user R on(R.userid=S.userid)where scheduleno=#{scheduleNo}
+	</select>
+	<select id="selectTimeTableList" parameterType="_int" resultType="map">
+		select tt.*,p.title , p.address, p.majorcategory from timetable tt join place p on(tt.placeno=p.placeno)where scheduleno=#{scheduleNo}
+	</select>
+	
+	<update id="updateSchedule" parameterType="schedule" >
+		update schedule set traveltheme=#{travelTheme}, partyname=#{partyName}, title=#{title}, startdate=#{startDate}, enddate=#{endDate}, peoplenum=#{peopleNum}, publicflag=#{publicFlag},writedate=sysdate, placeno=#{placeNo} where scheduleno=#{scheduleNo}
+	</update>
+	<delete id="deleteTimeTable" parameterType="_int" >
+		delete from timetable where scheduleno=#{scheduleNo}
+	</delete>
+	<delete id="scheduleDelete" parameterType="_int">
+		delete from schedule where scheduleno=#{scheduleNo}
+	</delete> 
+
+
+	<update id="updateHitsCountUp" parameterType="_int">
+		UPDATE SCHEDULE SET HITSCOUNT = HITSCOUNT+1 WHERE SCHEDULENO=#{scheduleNo}
+	</update>
+
+
+	<select id="selectScheduleSC" parameterType="_int" resultType='schedule'>
+		select traveltheme, partyname, title,to_char(startdate,'yyyy-mm-dd') startdate,to_char(enddate,'yyyy-mm-dd') as enddate, peoplenum, publicflag, placeno from schedule where scheduleno=#{scheduleNo}
+	</select>
+	
+	<select id="selectTimeTableSC" parameterType="_int" resultType='timetable'>
+		select * from timetable where scheduleno=#{scheduleNo}
+	</select>
+	
+	<select id="selectScheduleReportView" parameterType="_int" resultType="schedulereport">
+		select reportno,scheduleno,userid,title,content,reportday, to_char(writedate, 'yyyy-mm-dd') as writedate1 from schedule_report where scheduleno=#{scheduleNo}
+	</select>
+	<delete id="deleteReport">
+		delete from schedule_report where scheduleno=#{scheduleNo}
+	</delete>
+	
+</mapper>

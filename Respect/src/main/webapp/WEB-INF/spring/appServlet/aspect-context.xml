@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+		
+		
+	<!-- aspect를 등록하기 위한 전용환경설정 파일 -->
+	<!-- aspect로 활용할 객체를 bean으로 등록 -->
+	<!-- <bean id="loggerAspect" class="com.kh.spring.common.aop.LoggerAspect"/>
+	
+	aop선언(설정)
+	<aop:config>
+		<aop:aspect id="loggerAspect" ref="loggerAspect">
+			expression : execution(접근 제한자 패키지명을 포함한객체명. 메소드명 (매개변수))
+												execution(* com.kh.spring..*Service.*(..)) == 모든 패키지의 service관련?
+			<aop:pointcut expression="execution(* com.kh.spring.memo..*(..))" id="aop1"/>
+			<aop:around method="loggerAdvice" pointcut-ref="aop1"/>
+		</aop:aspect>
+	</aop:config> -->
+	
+	<!-- 어노테이션 및 pointcou의 표현식을 확인하여 aop적용 -->
+	<aop:aspectj-autoproxy/>
+	<!-- <bean id="UserRenew" class="com.kh.respect.common.aop.UserRenew"/> -->
+
+</beans>

@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css?family=Dokdo');
+@import url(//fonts.googleapis.com/earlyaccess/jejuhallasan.css);
+
+/* html, body, blockquote, caption, dl, dd, dt, fieldset, form, frame, h1, h2, h3, h4, h5, h6, hr, iframe, input, legend, li, object, ol, p,
+pre, q, select, table, textarea, ul, tr, td, button{margin:0; padding:0; font-family: "NanumSquare", "Nanum Gothic", "나눔고딕", "맑은 고딕", "Malgun Gothic", "Open Sans", "Dotum", "돋움", arial, sans-serif} */
+
+.dokdo * {
+ font-family: 'Dokdo', cursive;
+}
+
+.jejuhallasan * {
+ font-family: 'Jeju Hallasan', cursive;
+ font-size: 40px;
+}
+#navcol-1 {
+	font-size: 22px;
+    font-family: 'Do Hyeon', sans-serif;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: #000;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+   	color: #ffc107;
+}
+
+#map-index {
+  margin-bottom:100px;
+}
+
+#map-index h5 {
+  text-align:center;
+  line-height:30px;
+}
+
+#map-index h2 {
+  text-align:center;
+}
+
+#map-index .map {
+  display:block;
+  margin:50px auto;
+  width:60%;
+}
+
+#map-index .map-btn {
+  display:block;
+  margin:0 auto;
+}
+
+#map-tag .tag-all {
+  border: 1px solid #e5e5e5;
+  text-align:center;
+}
+
+#map-tag .map-row {
+  text-align:center;
+}
+
+#map-tag .map-row .col .row {
+  padding:10px;
+  border:1px solid #e5e5e5;
+}
+
+#map-tag .map-row .tag-all h5 {
+  padding-top:58px;
+  margin:0;
+}
+
+h5, .h5 {
+  margin:0;
+}
+
+#map-tag {
+  margin-bottom:100px;
+}
+
+#detail .page {
+  display:block;
+  margin:10px auto;
+  width:240px;
+}
+
+.icon {
+  font-size:30px;
+}
+
+.row.row-icon {
+  text-align:center;
+}
+
+.row.row-icon .icon {
+  color:#ffb53c;
+}
+
+.card-group > .card:not(:first-child):not(:last-child):not(:only-child) {
+  margin:10px 10px;
+}
+
+.card-group > .card:first-child {
+  margin:10px 0;
+}
+
+.card-group > .card:last-child {
+  margin:10px 0;
+}
+
+#detail-header .info {
+  width:450px;
+  height:560px;
+  position:absolute;
+  top:180px;
+  left:400px;
+  background:#fff;
+  padding:30px;
+  background-color:rgba(0,0,0,0.55);
+  color:rgb(255,255,255);
+}
+
+#detail-header .info-table th {
+  border:0;
+  border-bottom:1px solid #fff;
+}
+
+#detail-header .info-table td {
+  border:0;
+  min-width:60px;
+}
+
+#detail-header .info-table * {
+  padding:10px 0;
+}
+
+#detail-body .detail-icon {
+  font-size:50px;
+  color:#e5e5e5;
+}
+
+#detail-body h5 {
+  color:#ffb53c;
+  margin-top:10px;
+}
+
+#detail-body {
+  margin-bottom:50px;
+}
+
+.detail-content {
+  text-align:center;
+  padding:20px;
+}
+
+.user-photo {
+  width:150px;
+  height:100px;
+}
+
+#review .container .review-area .review-form * {
+  border:0;
+  text-align:center;
+}
+
+.pagination_jeju {
+	margin-top: 50px;
+}
+
+.pagination_jeju .page-item .page-link {
+	color: #000;
+}
+
+.pagination_jeju .page-item.active .page-link {
+	color: #fff;
+	background-color: #ffb53c;
+	border-color: #ffb53c;
+}
+

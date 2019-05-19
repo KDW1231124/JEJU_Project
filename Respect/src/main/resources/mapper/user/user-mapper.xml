@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="user">
+
+	<select id="idSelectOne" parameterType="string" resultType="user">
+		SELECT A.*,(SELECT COUNT(*) FROM MESSAGE WHERE RECEIVER=A.USERID AND READFLAG=0) AS NOREADMESSAGE FROM RP_USER A WHERE A.USERID=#{userId}
+	</select>
+	
+	<select id="nickSelectOne" parameterType="string" resultType="user">
+		SELECT * FROM RP_USER WHERE NICKNAME=#{userNick}
+	</select>
+	
+	<select id="emailSelectOne" parameterType="string" resultType="user">
+		SELECT * FROM RP_USER WHERE EMAIL=#{userEmail}
+	</select>
+	
+	<insert id = "insertUser">
+		INSERT INTO RP_USER VALUES(#{userId},#{password},#{nickName},#{birth},#{gender},#{email},0,NULL,SYSDATE,'basicprofile.jpg',0,0)
+	</insert>
+	
+	<update id="createAuthKey">
+	UPDATE RP_USER SET EMAILHASH = #{emailHash} WHERE EMAIL = #{email}
+	</update>
+	
+	<update id="userAuth">
+	UPDATE RP_USER SET EMAILCHECK = 1 WHERE EMAIL = #{email}
+	</update>
+	
+	<update id="profileUpdate" parameterType="map">
+		UPDATE RP_USER SET PICTURE = #{renamed} WHERE USERID = #{userId}
+	</update>
+	
+	<update id="PasswordUpdate" parameterType="user">
+		UPDATE RP_USER SET PASSWORD = #{password} WHERE USERID = #{userId}
+	</update>
+	
+	<update id="updateUserInfo" parameterType="user">
+		UPDATE RP_USER SET NICKNAME = #{nickName} WHERE USERID = #{userId}
+	</update>
+	
+	<update id="userUpdatePasswordEnd" parameterType="map">
+		UPDATE RP_USER SET PASSWORD = #{enPw2} WHERE USERID = #{userId}
+	</update>
+	
+	<update id="userDeleteEnd" parameterType="string">
+		UPDATE RP_USER SET LEAVEFLAG = 1 WHERE USERID = #{userId}
+	</update>
+	
+	<update id="userProfileDelete" parameterType="string">
+		UPDATE RP_USER SET PICTURE = 'basicprofile.jpg' WHERE USERID = #{userId}
+	</update>
+	
+	
+	
+</mapper>

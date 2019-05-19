@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="mybatis">
+
+	<resultMap type="map" id="noticeMap"></resultMap>
+	
+	<select id="selectNoticeList" resultMap="noticeMap">
+		select A.*,(select count(*) from attachment where noticeno = A.noticeno) filecount from notice A order by NOTICENO desc
+	</select>
+	
+	<select id="selectTotalCount" resultType="_int">
+		select count(*) from notice
+	</select>
+	
+
+	<select id="selectnoView" resultType="notice" parameterType="_int">
+		select * from notice where noticeno=#{noticeNo}
+	</select>
+	
+	<insert id="insertNoCount" parameterType="_int">
+		update notice set hitscount=hitscount+1 where noticeno=#{noticeNo}
+	</insert>
+
+	<insert id="insertNotice" parameterType="notice">
+		insert into notice values(seq_notice.nextval, #{title} , #{content} , sysdate, 0)
+		<selectKey keyProperty="noticeNo" resultType="_int" order="AFTER">
+			select seq_notice.currval from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="insertAttach" parameterType="com.kh.respect.notice.model.vo.Attachment">
+		insert into attachment(attachmentno, noticeno, originalfilename, renamedfilename) values(seq_attachmentno.nextval, #{noticeNo}, #{originalFileName}, #{renamedFileName})
+	</insert>
+	
+	<select id="selectAttach" resultType="com.kh.respect.notice.model.vo.Attachment" parameterType="_int">
+		select * from attachment where noticeno=#{noticeNo}
+	</select>
+	
+	<delete id="deleteNotice" parameterType="_int">
+		delete from notice where noticeno=#{noticeNo}
+	</delete>
+	
+	<select id="searchNoticeList" resultMap="noticeMap" parameterType="string">
+		select A.*,(select count(*) from attachment where noticeno = A.noticeno) filecount from notice A where title like '%'||#{searchText}||'%' or content like '%'||#{searchText}||'%' order by noticeno desc
+	</select>
+	
+</mapper>

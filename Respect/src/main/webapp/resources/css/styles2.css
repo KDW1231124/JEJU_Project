@@ -1,0 +1,174 @@
+.accordian {
+    width: 805px; height: 320px;
+    overflow: hidden;
+    
+    /*Time for some styling*/
+    margin: 25px auto;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35);
+    -webkit-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35);
+    -moz-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.35);
+    }
+
+    /*A small hack to prevent flickering on some browsers*/
+    .accordian ul {
+        width: 1200px;
+        /*This will give ample space to the last item to move
+        instead of falling down/flickering during hovers.*/
+    }
+
+    .accordian li {
+        position: relative;
+        display: block;
+        width: 160px;
+        float: left;
+        
+        border-left: 1px solid #888;
+        
+        box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.5);
+        -webkit-box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.5);
+        
+        /*Transitions to give animation effect*/
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        -moz-transition: all 0.5s;
+        /*If you hover on the images now you should be able to 
+        see the basic accordian*/
+    }
+
+    /*Reduce with of un-hovered elements*/
+    .accordian ul:hover li {width: 40px;}
+    /*Lets apply hover effects now*/
+    /*The LI hover style should override the UL hover style*/
+    .accordian ul li:hover {width: 640px;}
+
+
+    .accordian li img {
+        display: block;
+        width: 640px;
+    	height: 320px;
+    }
+
+    /*Image title styles*/
+    .image_title {
+        background: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        left: 0; bottom: 0;	
+    	width: 640px;
+    }
+    .image_title a {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        padding: 20px;
+        font-size: 16px;
+    }
+
+
+    
+
+
+    a, a:focus , a:hover{ 
+        text-decoration: none;
+        color: inherit;
+      }
+       a:hover, .btn{
+          outline:none! important;
+      }
+      
+      /*CATEGORIES BADGE*/
+      .badge {
+          font-weight: 600;
+          font-size: 13px;
+          color: white;
+          background-color: orange;
+      }
+      /*FEATURED*/
+      .mg-2, .mg-4{
+          margin-left:-20px;
+      }
+      .linkfeat{
+          background: rgba(76,76,76,0);
+          background: -moz-linear-gradient(top, rgba(76,76,76,0) 0%, rgba(48,48,48,0) 49%, rgba(19,19,19,1) 100%);
+          background: -webkit-linear-gradient(top, rgba(76,76,76,0) 0%, rgba(48,48,48,0) 49%, rgba(19,19,19,1) 100%);
+          background: -o-linear-gradient(top, rgba(76,76,76,0) 0%, rgba(48,48,48,0) 49%, rgba(19,19,19,1) 100%);
+          background: -ms-linear-gradient(top, rgba(76,76,76,0) 0%, rgba(48,48,48,0) 49%, rgba(19,19,19,1) 100%);
+          background: linear-gradient(to bottom, rgba(76,76,76,0) 0%, rgba(48,48,48,0) 49%, rgba(19,19,19,1) 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313', GradientType=0 );
+      }
+
+      .card-title{
+        
+        font-weight: bold;
+      }
+
+      .carousel-item>.card>.card-img {
+        height: 308.25px;
+      }
+
+      .carousel-inner img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .carousel-control-prev-icon{
+        background-image: url("${path}/resources/img/main/next.png");
+        background-repeat: no-repeat;
+      }
+      
+      .carousel-control-prev-icon{
+      
+        background-image: url("${path}/resources/img/main/prev.png");
+        background-repeat: no-repeat;
+      }
+      
+   *{
+      margin: 0;
+      padding: 0;
+        
+    }
+    
+    a{
+        color: inherit; text-decoration: none;
+    }
+    a:hover{
+        color: orange;
+        text-decoration: none;
+    }
+    /*
+    p{
+        margin:0;
+    }
+    ul{
+        list-style: none;
+    }
+    ul>li{
+        float: left;
+    } */
+    
+    /* @media (max-width: 350px) {
+        .fixed-top {
+            max-width: 340px;
+            margin:0;
+            padding: 0;
+        }
+    }*/
+    
+     #rank-list {
+    overflow: hidden;
+    margin: 0;
+    }
+
+    #rank-list ol {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+    
+    
+    
+    
+     

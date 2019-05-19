@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="message">
+	<resultMap type="map" id="messageMap">
+	
+	</resultMap>
+	
+	<select id="receiveMessageList" resultMap="messageMap">
+		SELECT M.*,R.NICKNAME FROM MESSAGE M INNER JOIN RP_USER R ON(M.WRITER=R.USERID) WHERE RECEIVER=#{userId} AND RECDEL=0 ORDER BY WRITEDATE DESC
+	</select>
+	
+	<select id="receiveMessageTotalCount" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM MESSAGE WHERE RECEIVER=#{userId} AND RECDEL=0
+	</select>
+	
+	<select id="readFlagChange" parameterType="_int">
+		UPDATE MESSAGE SET READFLAG = 1 WHERE MSGNO = #{msgNo}
+	</select>
+	
+	<select id="receiveMessageView" parameterType="_int" resultType="message">
+		SELECT M.*,R.NICKNAME FROM MESSAGE M INNER JOIN RP_USER R ON(M.WRITER=R.USERID) WHERE MSGNO=#{msgNo}
+	</select>
+	
+	<select id="writeMessageList" resultMap="messageMap">
+		SELECT M.*,R.NICKNAME FROM MESSAGE M INNER JOIN RP_USER R ON(M.WRITER=R.USERID) WHERE WRITER=#{userId} AND WRIDEL=0 ORDER BY WRITEDATE DESC
+	</select>
+	
+	<select id="writeMessageTotalCount" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM MESSAGE WHERE WRITER=#{userId} AND WRIDEL=0
+	</select>
+	
+	<select id="writeMessageView" parameterType="_int" resultType="message">
+		SELECT M.*,R.NICKNAME FROM MESSAGE M INNER JOIN RP_USER R ON(M.RECEIVER=R.USERID) WHERE MSGNO=#{msgNo}
+	</select>
+	
+	<insert id="sendMessageEnd" parameterType="map">
+		INSERT INTO MESSAGE VALUES(SEQ_MESSAGE.NEXTVAL,#{writeId},#{receiveId},#{title},#{content},SYSDATE,0,0,0)
+	</insert>
+	
+	<update id="receiveMessageDelete" parameterType="_int">
+		UPDATE MESSAGE SET RECDEL=1,READFLAG=1 WHERE MSGNO=#{msgNo}
+	</update>
+	
+	<update id="wrtieMessageDelete" parameterType="_int">
+		UPDATE MESSAGE SET WRIDEL=1 WHERE MSGNO=#{msgNo}
+	</update>
+	
+</mapper>

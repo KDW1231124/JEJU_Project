@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="meet">
+	
+	<resultMap type="map" id="meetMap"></resultMap>
+	
+	<select id="selectMeetList" resultMap="meetMap">
+		<!-- select *,A.nickname from meet B join rp_user A on(B.userid=A.userid) -->
+		select A.*, b.gender, b.nickname, to_char(meetdate, 'yyyy/MM/dd') as meetday, to_number(extract(year from sysdate))-(to_number(substr(b.birth,0,2))+1900)+1 as age from meet A left join rp_user B on A.userid=b.userid
+	</select>
+	
+	<select id="searchMeetList" resultMap="meetMap" parameterType="map">
+		select A.*, b.gender, b.nickname, to_char(meetdate, 'yyyy/MM/dd') as meetday, to_number(extract(year from sysdate))-(to_number(substr(b.birth,0,2))+1900)+1 as age from meet A left join rp_user B on A.userid=b.userid where A.meetdate between #{start} and #{end} and A.address like '%'||#{area}||'%'
+	</select>
+	 
+	
+	<select id="selectTotalCount" resultType="_int">
+		select count(*) from meet
+	</select>
+	
+	<insert id="insertMeet" parameterType="meet">
+		insert into meet(meetno, userid, area, title, content, meetdate, meettime, address, hitscount, replycount, writedate, thumbnail) 
+		values(seq_meet.nextval, #{userId}, #{area}, #{title}, #{content}, #{meetDate}, #{meetTime}, #{address}, default, default, sysdate, #{thumbnail})
+		<selectKey keyProperty="meetNo" resultType="_int" order="AFTER">
+			select seq_meet.currval from dual
+		</selectKey>
+	</insert>
+	
+	<select id="selectOne" resultType="meet">
+		select A.*, b.gender, b.nickname, to_char(meetdate, 'yyyy/MM/dd') as meetday, to_number(extract(year from sysdate))-(to_number(substr(b.birth,0,2))+1900)+1 as age from meet A left join rp_user B on A.userid=b.userid where meetno=#{meetNo}
+	</select>
+	
+	<delete id="meetDelete" parameterType="_int">
+		delete from meet where meetno=#{meetNo}
+	</delete>
+	
+	<update id="meetUpdate" parameterType="meet">
+		update meet set userid=#{userId}, area=#{area}, title=#{title}, content=#{content}, meetdate=#{meetDate}, meettime=#{meetTime}, address=#{address} where meetno=#{meetNo}
+	</update>
+	
+	<update id="updateMeetCnt">
+		update meet set hitscount=hitscount+1 where meetno=#{meetNo}
+	</update>
+	
+	<!-- 댓글 -->
+	<insert id="meetReplyWrite" parameterType="com.kh.respect.meet.model.vo.MeetReply">
+        INSERT INTO MEET_REPLY VALUES(SEQ_MEET_REPLY.NEXTVAL, #{meetNo}, NULL, #{userId}, SYSDATE, #{content}, 0, #{meetReplyLevel}, 0)
+       	<selectKey keyProperty="replyNo" resultType="_int" order="AFTER">
+        	SELECT SEQ_MEET_REPLY.CURRVAL FROM DUAL
+     	</selectKey>
+    </insert>
+     
+     <update id="meetReplyCountUpdate" parameterType="_int">
+        UPDATE MEET SET REPLYCOUNT = REPLYCOUNT+1 WHERE MEETNO = #{meetNo}
+     </update>
+     
+     <insert id="insertMeetReplyAttach" parameterType="com.kh.respect.meet.model.vo.MeetReplyAttachment">
+        INSERT INTO MEET_REPLY_ATTACHMENT VALUES(SEQ_MEET_REPLY_ATTACHMENT.NEXTVAL,#{replyNo},#{originName},#{reNamed})
+     </insert>
+     
+     <insert id="meetReplyWrite2" parameterType="com.kh.respect.meet.model.vo.MeetReply">
+        INSERT INTO MEET_REPLY VALUES(SEQ_MEET_REPLY.NEXTVAL,#{meetNo},#{replyRef},#{userId},SYSDATE,#{content},0,#{meetReplyLevel},0)
+     </insert>
+     
+     <update id="meetReplyReplyCountUpdate" parameterType="_int">
+        UPDATE MEET_REPLY SET REPLYCOUNT = REPLYCOUNT+1 WHERE REPLYNO=#{replyRefNo}
+     </update>
+     
+     <delete id="meetReplyDelete" parameterType="_int">
+        DELETE FROM MEET_REPLY WHERE REPLYNO=#{replyNo}
+     </delete>
+     
+     <update id="meetReplyGood" parameterType="_int">
+        UPDATE MEET_REPLY SET GOODCOUNT = GOODCOUNT+1 WHERE REPLYNO=#{replyNo}
+     </update>
+     
+     <select id="meetReplyGoodCheck" parameterType="com.kh.respect.meet.model.vo.MeetReply" resultType="_int">
+        SELECT COUNT(*) FROM MEET_REPLY_GOOD WHERE REPLYNO=#{replyNo} AND USERID=#{userId}
+     </select>
+     
+     <insert id="insertmeetReplyGood" parameterType="com.kh.respect.meet.model.vo.MeetReply">
+        INSERT INTO MEET_REPLY_GOOD VALUES(#{replyNo},#{userId})
+     </insert>
+     
+     <select id="meetReplyList" parameterType="_int" resultType="map">
+        select A.*,P.PICTURE,P.NICKNAME from MEET_REPLY A INNER JOIN RP_USER P ON(A.USERID = P.USERID) where MEETNO=#{meetNo} start with MEETREPLYLEVEL=1 connect by prior REPLYNO=REPLYREF order siblings by WRITEDATE asc
+     </select>
+     
+     <select id="meetAttList" resultType="map">
+        select * from MEET_REPLY_ATTACHMENT
+     </select>
+	
+	
+</mapper>
