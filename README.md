@@ -116,6 +116,8 @@
 
 <br>
 
+**공지사항**
+
 ![공지](https://user-images.githubusercontent.com/48043799/57997253-91f0ac00-7b06-11e9-8249-ecd4c0ef83b8.png)
 
 사이트내에 운영사항 및 행사등을 위한 공지사항 페이지
